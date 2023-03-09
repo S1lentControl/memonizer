@@ -28,7 +28,7 @@ fun main() = application {
     Window(
         title = "Memonizer",
         onCloseRequest = ::exitApplication,
-        state = rememberWindowState(size = DpSize(600.dp, 400.dp), position = Aligned(Alignment.Center))
+        state = rememberWindowState(size = DpSize(600.dp, 210.dp), position = Aligned(Alignment.Center))
     ) {
         App()
     }
