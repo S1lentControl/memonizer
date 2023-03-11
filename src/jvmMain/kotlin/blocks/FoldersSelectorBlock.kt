@@ -1,5 +1,6 @@
 package blocks
 
+import AppState
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -22,11 +23,10 @@ import javax.swing.JFileChooser
 
 @Preview
 @Composable
-fun FoldersSelectorBlock() {
+fun FoldersSelectorBlock(appState: AppState) {
 
     Row(modifier = Modifier.background(Color.LightGray)) {
         Column(modifier = Modifier.fillMaxWidth(0.5f)) {
-            var sourceDir by remember { mutableStateOf("") }
             var sourceButtonText by remember { mutableStateOf("Select source folder") }
             Button(
                 onClick = {
@@ -37,7 +37,8 @@ fun FoldersSelectorBlock() {
                             approveButtonText = "Select"
                         }
                     f.showOpenDialog(null)
-                    sourceDir = f.selectedFile.absolutePath
+                    appState.sourceDir = f.selectedFile.absolutePath
+                    println(appState.sourceDir)
                     sourceButtonText = "Change source folder"
                 },
                 modifier = Modifier.padding(10.dp)
@@ -45,11 +46,11 @@ fun FoldersSelectorBlock() {
                 Text(sourceButtonText)
             }
 
-            if (sourceDir.isNotEmpty()) {
+            if (appState.sourceDir.isNotEmpty()) {
                 Card(
                     content = {
                         Text(
-                            text = "Source folder: $sourceDir",
+                            text = "Source folder: ${appState.sourceDir}",
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                         )
                     },
@@ -59,7 +60,6 @@ fun FoldersSelectorBlock() {
         }
 
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
-            var destDir by remember { mutableStateOf("") }
             var sourceButtonText by remember { mutableStateOf("Select destination folder") }
             Button(
                 onClick = {
@@ -70,7 +70,7 @@ fun FoldersSelectorBlock() {
                             approveButtonText = "Select"
                         }
                     f.showOpenDialog(null)
-                    destDir = f.selectedFile.absolutePath
+                    appState.destDir = f.selectedFile.absolutePath
                     sourceButtonText = "Change destination folder"
                 },
 
@@ -79,11 +79,11 @@ fun FoldersSelectorBlock() {
                 Text(sourceButtonText)
             }
 
-            if (destDir.isNotEmpty()) {
+            if (appState.destDir.isNotEmpty()) {
                 Card(
                     content = {
                         Text(
-                            text = "Destination folder: $destDir",
+                            text = "Destination folder: $appState.value.destDir",
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                         )
                     },

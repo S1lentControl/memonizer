@@ -1,5 +1,6 @@
 package blocks
 
+import AppState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,11 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import constants.BLACK_GREEN
+import fileService
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun RunBlock() {
+fun RunBlock(appState: AppState) {
 
     val progressFloat = remember { mutableStateOf(0f) }
     val progressStarted = remember { mutableStateOf(false) }
@@ -44,6 +46,9 @@ fun RunBlock() {
             }
             Button(
                 onClick = {
+                    val count = fileService.countFilesInFolder(appState.sourceDir)
+                    println(count)
+
                     progressFloat.value = 0f
                     progressStarted.value = false
 
