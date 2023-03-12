@@ -13,6 +13,7 @@ import androidx.compose.ui.window.WindowPosition.Aligned
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import blocks.FoldersSelectorBlock
+import blocks.PrepareBlock
 import blocks.RunBlock
 import service.FileService
 
@@ -25,6 +26,7 @@ fun App() {
     MaterialTheme {
         Column {
             FoldersSelectorBlock(appState)
+            PrepareBlock(appState)
             RunBlock(appState)
         }
     }

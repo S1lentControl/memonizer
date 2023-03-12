@@ -46,7 +46,7 @@ fun FoldersSelectorBlock(appState: AppState) {
                 Text(sourceButtonText)
             }
 
-            if (appState.sourceDir.isNotEmpty()) {
+            if (appState.sourceDir?.isNotEmpty() == true) {
                 Card(
                     content = {
                         Text(
@@ -79,11 +79,11 @@ fun FoldersSelectorBlock(appState: AppState) {
                 Text(sourceButtonText)
             }
 
-            if (appState.destDir.isNotEmpty()) {
+            if (appState.destDir?.isNotEmpty() == true) {
                 Card(
                     content = {
                         Text(
-                            text = "Destination folder: $appState.value.destDir",
+                            text = "Destination folder: ${appState.destDir}",
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                         )
                     },

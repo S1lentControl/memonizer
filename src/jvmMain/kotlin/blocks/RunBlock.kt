@@ -44,25 +44,42 @@ fun RunBlock(appState: AppState) {
                     progress = progressFloat.value
                 )
             }
-            Button(
-                onClick = {
-                    val count = fileService.countFilesInFolder(appState.sourceDir)
-                    println(count)
+            if (!appState.isPrepared) {
+                Button(
+                    onClick = {
+                        val countResult = fileService.countFilesInFolder(appState.sourceDir!!)
+                        appState.totalImages = countResult.images
+                        appState.totalVideos = countResult.videos
+                        appState.isPrepared = true
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = BLACK_GREEN, contentColor = Color.White),
+                    enabled = appState.sourceDir != null && appState.destDir != null
+                ) {
+                    Text("Next")
+                }
+            } else {
+                Button(
+                    onClick = {
+                        progressFloat.value = 0f
+                        progressStarted.value = false
 
-                    progressFloat.value = 0f
-                    progressStarted.value = false
-
-                    progressStarted.value = true
-                    coroutineScope.launch {
-                        while (progressFloat.value < 1) {
-                            progressFloat.value += 0.1f
-                            delay(300)
+                        progressStarted.value = true
+                        fileService.copyFiles(appState)
+                        val totalMediaFiles = appState.totalImages!! + appState.totalVideos!!
+                        coroutineScope.launch {
+                            progressFloat.value = appState.processedFiles.get().toFloat() / totalMediaFiles
+                            while (totalMediaFiles != appState.processedFiles.get()) {
+                                progressFloat.value = appState.processedFiles.get().toFloat() / totalMediaFiles
+                                delay(100)
+                                println(1)
+                            }
                         }
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(backgroundColor = BLACK_GREEN, contentColor = Color.White),
-            ) {
-                Text("Organize")
+                    },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = BLACK_GREEN, contentColor = Color.White),
+                    enabled = appState.sourceDir != null && appState.destDir != null
+                ) {
+                    Text("Organize")
+                }
             }
         }
     }
