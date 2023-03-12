@@ -16,6 +16,9 @@ import blocks.FoldersSelectorBlock
 import blocks.PrepareBlock
 import blocks.RunBlock
 import service.FileService
+import service.MetadataService
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 @Preview
@@ -33,6 +36,8 @@ fun App() {
 }
 
 val fileService = FileService()
+val metadataService = MetadataService()
+val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault())
 
 fun main() = application {
     Window(

@@ -6,19 +6,16 @@ import constants.IMAGES_FOLDER_NAME
 import constants.VIDEOS_FOLDER_NAME
 import constants.VIDEO_EXTENSIONS
 import extensions.endsWithMulti
+import metadataService
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicLong
 
-class FileService {
 
-    private val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.systemDefault())
+class FileService {
 
     fun countFilesInFolder(path: String): CountResult {
         val images = AtomicLong(0)
@@ -87,13 +84,13 @@ class FileService {
 
     private fun calculateImageFilename(file: File): String {
         val size = file.length()
-        val date = dateTimeFormat.format(Instant.ofEpochMilli(file.lastModified()))
+        val date = metadataService.extractOriginalDate(file)
         return "${date}_${size}.${file.extension}"
     }
 
     private fun calculateVideoFilename(file: File): String {
         val size = file.length()
-        val date = dateTimeFormat.format(Instant.ofEpochMilli(file.lastModified()))
+        val date = metadataService.extractOriginalDate(file)
         return "${date}_${size}.${file.extension}"
     }
 
