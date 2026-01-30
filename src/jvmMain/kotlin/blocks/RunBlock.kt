@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import constants.BLACK_GREEN
 import fileService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -28,8 +29,8 @@ fun RunBlock(appState: AppState) {
 
     val progressFloat = remember { mutableStateOf(0f) }
     val progressStarted = remember { mutableStateOf(false) }
+    val isProcessing = remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
-
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -47,13 +48,15 @@ fun RunBlock(appState: AppState) {
             if (!appState.isPrepared) {
                 Button(
                     onClick = {
-                        val countResult = fileService.countFilesInFolder(appState.sourceDir!!)
-                        appState.totalImages = countResult.images
-                        appState.totalVideos = countResult.videos
-                        appState.isPrepared = true
+                        coroutineScope.launch(Dispatchers.IO) {
+                            val countResult = fileService.countFilesInFolder(appState.sourceDir!!)
+                            appState.totalImages = countResult.images
+                            appState.totalVideos = countResult.videos
+                            appState.isPrepared = true
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = BLACK_GREEN, contentColor = Color.White),
-                    enabled = appState.sourceDir != null && appState.destDir != null
+                    enabled = appState.sourceDir != null && appState.destDir != null && !isProcessing.value
                 ) {
                     Text("Next")
                 }
@@ -61,24 +64,32 @@ fun RunBlock(appState: AppState) {
                 Button(
                     onClick = {
                         progressFloat.value = 0f
-                        progressStarted.value = false
-
                         progressStarted.value = true
-                        fileService.copyFiles(appState)
+                        isProcessing.value = true
+                        appState.processedFiles.set(0)
+                        
                         val totalMediaFiles = appState.totalImages!! + appState.totalVideos!!
+                        
+                        coroutineScope.launch(Dispatchers.IO) {
+                            try {
+                                fileService.copyFiles(appState)
+                            } finally {
+                                isProcessing.value = false
+                            }
+                        }
+                        
                         coroutineScope.launch {
-                            progressFloat.value = appState.processedFiles.get().toFloat() / totalMediaFiles
-                            while (totalMediaFiles != appState.processedFiles.get()) {
+                            while (isProcessing.value) {
                                 progressFloat.value = appState.processedFiles.get().toFloat() / totalMediaFiles
                                 delay(100)
-                                println(1)
                             }
+                            progressFloat.value = 1f
                         }
                     },
                     colors = ButtonDefaults.buttonColors(backgroundColor = BLACK_GREEN, contentColor = Color.White),
-                    enabled = appState.sourceDir != null && appState.destDir != null
+                    enabled = appState.sourceDir != null && appState.destDir != null && !isProcessing.value
                 ) {
-                    Text("Organize")
+                    Text(if (isProcessing.value) "Processing..." else "Organize")
                 }
             }
         }
