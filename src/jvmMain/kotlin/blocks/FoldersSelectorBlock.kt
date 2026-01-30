@@ -36,10 +36,11 @@ fun FoldersSelectorBlock(appState: AppState) {
                             dialogTitle = sourceButtonText
                             approveButtonText = "Select"
                         }
-                    f.showOpenDialog(null)
-                    appState.sourceDir = f.selectedFile.absolutePath
-                    println(appState.sourceDir)
-                    sourceButtonText = "Change source folder"
+                    val result = f.showOpenDialog(null)
+                    if (result == JFileChooser.APPROVE_OPTION && f.selectedFile != null) {
+                        appState.sourceDir = f.selectedFile.absolutePath
+                        sourceButtonText = "Change source folder"
+                    }
                 },
                 modifier = Modifier.padding(10.dp)
             ) {
@@ -60,23 +61,24 @@ fun FoldersSelectorBlock(appState: AppState) {
         }
 
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
-            var sourceButtonText by remember { mutableStateOf("Select destination folder") }
+            var destButtonText by remember { mutableStateOf("Select destination folder") }
             Button(
                 onClick = {
                     val f = JFileChooser("/")
                         .apply {
                             fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
-                            dialogTitle = sourceButtonText
+                            dialogTitle = destButtonText
                             approveButtonText = "Select"
                         }
-                    f.showOpenDialog(null)
-                    appState.destDir = f.selectedFile.absolutePath
-                    sourceButtonText = "Change destination folder"
+                    val result = f.showOpenDialog(null)
+                    if (result == JFileChooser.APPROVE_OPTION && f.selectedFile != null) {
+                        appState.destDir = f.selectedFile.absolutePath
+                        destButtonText = "Change destination folder"
+                    }
                 },
-
                 modifier = Modifier.padding(10.dp)
             ) {
-                Text(sourceButtonText)
+                Text(destButtonText)
             }
 
             if (appState.destDir?.isNotEmpty() == true) {
@@ -91,6 +93,5 @@ fun FoldersSelectorBlock(appState: AppState) {
                 )
             }
         }
-
     }
 }

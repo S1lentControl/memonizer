@@ -4,7 +4,7 @@ import dateTimeFormat
 import extractor.ExifOriginalDateExtractor
 import extractor.LastModifiedDateExtractor
 import java.io.File
-
+import java.time.Instant
 
 class MetadataService {
 
@@ -13,7 +13,11 @@ class MetadataService {
         LastModifiedDateExtractor()
     )
 
-    fun extractOriginalDate(file: File): String =
-        originalDateExtractors.firstNotNullOf { it.extractOriginalDate(file) }
-            .let { dateTimeFormat.format(it) }
+    fun extractOriginalDate(file: File): String {
+        val instant = originalDateExtractors.firstNotNullOfOrNull { 
+            it.extractOriginalDate(file) 
+        } ?: Instant.now()
+        
+        return dateTimeFormat.format(instant)
+    }
 }
